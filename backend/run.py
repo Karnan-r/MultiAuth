@@ -1,8 +1,6 @@
 from app import create_app
 
-# ✅ Gunicorn expects a callable function, not an instance
-def app():
-    return create_app()
+app = create_app()  # ✅ Create an instance of the app
 
 
 # if __name__ == "__main__":
