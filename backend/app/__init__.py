@@ -13,12 +13,18 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
 
+    # ✅ Set the PORT dynamically from Render
+    port = int(os.environ.get("PORT", 10000))
+
+    # ✅ Start the app using the correct port
+    app.config["SERVER_NAME"] = f"0.0.0.0:{port}"
+
     # ✅ Load configuration
     app.config.from_object('app.config.Config')
 
-    # ✅ Explicitly define a session type in case it's missing
+    # ✅ Explicitly define a session type
     if not app.config.get("SESSION_TYPE"):
-        app.config["SESSION_TYPE"] = "filesystem"  # Default fallback
+        app.config["SESSION_TYPE"] = "filesystem"
 
     Session(app)  # ✅ Initialize Flask-Session
 
@@ -28,12 +34,12 @@ def create_app():
     jwt.init_app(app)
     CORS(app)
 
-    # ✅ Register Blueprints (Avoid duplicate registration)
+    # ✅ Register Blueprints
     from app.routes import auth
-    if "auth" not in app.blueprints:
-        app.register_blueprint(auth, url_prefix="/")
+    app.register_blueprint(auth, url_prefix="/api")
 
     with app.app_context():
         db.create_all()
 
     return app
+
