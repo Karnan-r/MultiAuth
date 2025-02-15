@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_session import Session
 from flask_migrate import Migrate
-from app.routes import auth
+
 import os
 
 db = SQLAlchemy()
@@ -36,7 +36,7 @@ def create_app():
     CORS(app)
 
     # ✅ Register Blueprints
-    
+    from app.routes import auth
     app.register_blueprint(auth, url_prefix="/")
 
 
