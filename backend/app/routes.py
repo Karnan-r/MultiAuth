@@ -139,14 +139,20 @@ def promote_user():
 # ✅ Route: Start Google OAuth Login
 @auth.route("/login/google")
 def google_login():
+    print("🔵 Google Login route hit!")  # Debugging log
+
     google = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=url_for("auth.google_callback", _external=True),
                            scope=["openid", "email", "profile"])
+
     auth_url, state = google.authorization_url(GOOGLE_AUTH_URI)
+    print(f"🔵 Redirecting to Google: {auth_url}")  # ✅ Print the Google URL
+
     session["oauth_state"] = state
     return redirect(auth_url)
 
 
-# ✅ Route: Google OAuth Callback
+
+
 # ✅ Route: Google OAuth Callback (Fixed)
 @auth.route("/login/google/authorized")
 def google_callback():
@@ -159,43 +165,34 @@ def google_callback():
     session["google_token"] = token
     user_info = google.get(GOOGLE_USERINFO_URI).json()
 
-    # ✅ Check if user already exists in DB
+    # ✅ Check if user exists
     user = User.query.filter_by(email=user_info["email"]).first()
 
     if not user:
-        # ✅ Assign Google users to a "GoogleUsers" tenant or create a new one
         tenant = Tenant.query.filter_by(name="GoogleUsers").first()
         if not tenant:
             tenant = Tenant(name="GoogleUsers")
             db.session.add(tenant)
             db.session.commit()
 
-        # ✅ Create new user with a valid tenant_id
+        # ✅ Create user
         user = User(
             name=user_info["name"],
             email=user_info["email"],
-            password=None,  # No password needed for OAuth users
-            tenant_id=tenant.id,  # ✅ Assign tenant_id to ensure proper tenant-based isolation
-            role="user"  # Default role for Google users
+            password=None,
+            tenant_id=tenant.id,
+            role="user"
         )
         db.session.add(user)
         db.session.commit()
 
-    # ✅ Generate JWT token with tenant_id
-    access_token = create_access_token(
-        identity=user.email,
-        additional_claims={"role": user.role, "tenant_id": user.tenant_id}  # ✅ Include tenant_id in JWT
-    )
+    # ✅ Generate JWT
+    access_token = create_access_token(identity=user.email, additional_claims={"role": user.role, "tenant_id": user.tenant_id})
 
-    return jsonify({
-        "jwt_token": access_token,
-        "user_info": {
-            "email": user.email,
-            "name": user.name,
-            "role": user.role,
-            "tenant_id": user.tenant_id  # ✅ Now correctly assigned
-        }
-    })
+    # ✅ Redirect back to frontend with JWT token
+    frontend_redirect_url = f"http://127.0.0.1:5173/oauth/callback?token={access_token}"
+    return redirect(frontend_redirect_url)
+
 
 
 
