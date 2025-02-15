@@ -1,0 +1,23 @@
+# Ignore database
+multiauth.db
+*.sqlite3
+
+# Ignore virtual environment
+venv/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore JWT secret key
+jwt_secret.key
+# Ignore environment variables
+.env
+
+# Ignore database files
+*.sqlite3
+multiauth.db
+
+# Ignore Python cache
+__pycache__/
+venv/
