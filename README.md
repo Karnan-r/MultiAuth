@@ -108,18 +108,5 @@ const API_URL = "http://127.0.0.1:5000/api";
 
 ---
 
-## 📌 **Backend Deployment Issue**
 
-The backend deployment on **Render** is facing an issue where **API routes return 404**. Due to time constraints, I am submitting the repo with full **local setup instructions**, ensuring everything works locally.
-
-✅ The backend is functional locally. The deployment issue is under debugging.
-
-If needed, I am happy to assist in resolving backend deployment.
-
----
-
-## 📬 Contact
-For any issues, feel free to reach out!
-
-🚀 **Hope you enjoy using MultiAuth!**
 
